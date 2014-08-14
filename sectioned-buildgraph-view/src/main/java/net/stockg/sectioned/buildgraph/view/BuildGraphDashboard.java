@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
@@ -73,9 +74,10 @@ public class BuildGraphDashboard  extends View {
     @Override
     protected void submit(StaplerRequest sr) throws IOException, ServletException, Descriptor.FormException {
         sr.bindJSON(this, sr.getSubmittedForm());
+        LOGGER.log(Level.INFO, "submitted:: "+sr.getSubmittedForm().toString());
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     public Item doCreateItem(StaplerRequest sr, StaplerResponse sr1) throws IOException, ServletException {
         Item item = Jenkins.getInstance().doCreateItem(sr, sr1);
