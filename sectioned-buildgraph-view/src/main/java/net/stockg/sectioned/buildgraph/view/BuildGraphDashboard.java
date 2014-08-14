@@ -73,13 +73,19 @@ public class BuildGraphDashboard  extends View {
 
     @Override
     protected void submit(StaplerRequest sr) throws IOException, ServletException, Descriptor.FormException {
-        sr.bindJSON(this, sr.getSubmittedForm());
+        //sr.bindJSON(this, sr.getSubmittedForm());
+
+            LOGGER.log(Level.INFO, "element:: "+sr.getSubmittedForm().toString());
+            
+            
+       
         LOGGER.log(Level.INFO, "submitted:: "+sr.getSubmittedForm().toString());
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     @Override
     public Item doCreateItem(StaplerRequest sr, StaplerResponse sr1) throws IOException, ServletException {
+        
         Item item = Jenkins.getInstance().doCreateItem(sr, sr1);
 		if (item != null) {
 			//jobColumns.add(new JobColumn(item.getName(), null, false, true));
