@@ -10,13 +10,16 @@ import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
 import hudson.model.Item;
+import hudson.model.ListView;
 import hudson.model.TopLevelItem;
 import hudson.model.View;
 import hudson.model.ViewDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,9 +36,10 @@ import org.kohsuke.stapler.StaplerResponse;
  *
  * @author gstockfisch
  */
-public class BuildGraphDashboard  extends View {
+public class BuildGraphDashboard  extends ListView {
 
     public static Logger LOGGER = Logger.getLogger(BuildGraphDashboard.class.getSimpleName());
+    private List<String> ACTIVEJOBS = new ArrayList<String>();
     
     @DataBoundConstructor
     public BuildGraphDashboard(String name) {
@@ -43,8 +47,21 @@ public class BuildGraphDashboard  extends View {
     }
     
     @Override
-    public Collection<TopLevelItem> getItems() {
+    public List<TopLevelItem> getItems() {
+        LOGGER.log(Level.INFO, "getting items");
         List<TopLevelItem> result = new ArrayList<TopLevelItem>();
+       // List<TopLevelItem> result = new ArrayList<TopLevelItem>();
+        
+        if(ACTIVEJOBS == null){
+            return result;
+        }
+        for (String names : ACTIVEJOBS) {
+            TopLevelItem item = super.getOwnerItemGroup().getItem(names);
+            result.add(item);
+           
+        }
+        
+       
 //        Set<AbstractProject> projects = new HashSet<AbstractProject>();
 //        
 //        for (AbstractProject project : projects) {
@@ -54,33 +71,62 @@ public class BuildGraphDashboard  extends View {
 //            }
 //        }
 //
+        LOGGER.log(Level.INFO, "getting items:: " + result.toString());
         return result;
     }
-//    @Override
-//    public Collection<TopLevelItem> getItems() {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
 
     @Override
     public boolean contains(TopLevelItem tli) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        LOGGER.log(Level.INFO, "in contains");
+        if(tli == null || ACTIVEJOBS == null){
+            return false;
+        }
+        return ACTIVEJOBS.contains(tli.getName());
     }
 
     @Override
     public void onJobRenamed(Item item, String string, String string1) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     protected void submit(StaplerRequest sr) throws IOException, ServletException, Descriptor.FormException {
         //sr.bindJSON(this, sr.getSubmittedForm());
 
             LOGGER.log(Level.INFO, "element:: "+sr.getSubmittedForm().toString());
             
-            
+            LOGGER.log(Level.INFO, "super:::: "+super.getItems().toString());
        
         LOGGER.log(Level.INFO, "submitted:: "+sr.getSubmittedForm().toString());
+        List<TopLevelItem> result = new ArrayList<TopLevelItem>();
+        for (Item item : super.getOwnerItemGroup().getItems()) {
+            String itemName = item.getName();
+            LOGGER.log(Level.INFO, "submitted single name:: "+itemName);
+            if(sr.getSubmittedForm().get(itemName).equals(true)){
+                if(ACTIVEJOBS == null){
+                    ACTIVEJOBS = new ArrayList<String>();
+                }
+                if(!ACTIVEJOBS.contains(itemName)){
+                    ACTIVEJOBS.add(itemName);
+                    LOGGER.log(Level.INFO, "adding single name:: "+itemName);
+                }
+            }
+            else if(ACTIVEJOBS != null && ACTIVEJOBS.contains(itemName)){
+               ACTIVEJOBS.remove(itemName);
+               
+            }
+        }
+        
+        
+        
+       
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
+    public Collection<TopLevelItem> getAllItems(){
+        LOGGER.log(Level.INFO, "getting ALL items");
+        return Collections.emptyList();
     }
     
     @Override

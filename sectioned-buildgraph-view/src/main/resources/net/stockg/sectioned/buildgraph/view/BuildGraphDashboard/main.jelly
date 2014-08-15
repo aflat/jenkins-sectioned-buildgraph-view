@@ -17,30 +17,18 @@ else {
 
 	<st:include page="viewTabs.jelly" it="${it.owner.viewsTabBar}"/>
         <table style="width:300px">
-            <tr style="border-top: 0px;">
-                    <j:if test="${customColumn != null}">
-                            <th class="customColumn">${customColumn.getHeaderName()}</th>
-                    </j:if>
-                    <th>
-                            ${it.firstColumnName}
-                    </th>
-                    <j:forEach items="${it.jobColumns}" var="job">
-                            <th class="${job.isHidden() ? 'hidden' : 'moo'}">
-                                    <a class="sortheader" href="job/${job.jobName}">${job.alias}</a>
-                            </th>
+            <tr style="border-top: 2px;">
+                   
+                   
+                    <j:forEach items="${it.items}" var="job">
+                        <tr>
+                        <td>${job.name}</td>
+                        </tr>
                     </j:forEach>
             </tr>
-            <tr>
-              <td>Jill</td>
-              <td>Smith</td>
-              <td>50</td>
-            </tr>
-            <tr>
-              <td>Eve</td>
-              <td>Jackson</td>
-              <td>94</td>
-            </tr>
+           
         </table>
+
        
 </j:jelly>
 
