@@ -58,6 +58,8 @@ public class BuildGraphDashboard  extends ListView {
         for (String names : ACTIVEJOBS) {
             TopLevelItem item = super.getOwnerItemGroup().getItem(names);
             result.add(item);
+            LOGGER.log(Level.INFO, "getting items jobs:: " + item.getAllJobs().toString());
+            
            
         }
         
