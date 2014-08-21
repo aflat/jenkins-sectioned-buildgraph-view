@@ -21,8 +21,10 @@ else {
                    
                    
                     <j:forEach items="${it.items}" var="job">
+                        <j:set var="table" value="${it.getDisplayRows(job.name)}"/>
                         <tr>
                         <td>${job.name}</td>
+                        <td>${table}</td>
                         </tr>
                     </j:forEach>
             </tr>
