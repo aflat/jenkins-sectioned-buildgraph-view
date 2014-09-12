@@ -88,7 +88,7 @@ public class BuildGraphDashboard  extends ListView {
             try{
                 FlowRun flowRun = new FlowRun(flow);
                 LOGGER.info("flow jobis now: " + flowRun.getJobsGraph().toString());
-                LOGGER.info("flow jobis222 now: " + flowRun.getDownstreamBuilds());
+                LOGGER.info("flow jobis222 now: " + flowRun.getJobsGraph().getAllEdges(null, null));
             }
             catch(Exception e){}
             
