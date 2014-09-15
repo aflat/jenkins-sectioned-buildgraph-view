@@ -7,6 +7,8 @@
 package net.stockg.sectioned.buildgraph.view;
 
 import com.cloudbees.plugins.flow.BuildFlow;
+import org.jenkinsci.plugins.buildgraphview.DownStreamRunDeclarer;
+import com.cloudbees.plugins.flow.FlowDownStreamRunDeclarer;
 import com.cloudbees.plugins.flow.FlowRun;
 import hudson.Extension;
 import hudson.model.AbstractBuild;
@@ -40,6 +42,8 @@ import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import static net.stockg.sectioned.buildgraph.view.BuildGraphDashboard.LOGGER;
+import org.jenkinsci.plugins.buildgraphview.BuildExecution;
+import org.jenkinsci.plugins.buildgraphview.BuildGraph;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -84,13 +88,29 @@ public class BuildGraphDashboard  extends ListView {
             run = project.getLastBuild();
            
  
-            BuildFlow flow = Jenkins.getInstance().getItemByFullName(item.getName(), BuildFlow.class);
+//            BuildFlow flow = Jenkins.getInstance().getItemByFullName(item.getName(), BuildFlow.class);
+//            try{
+//                FlowRun flowRun = new FlowRun(flow);
+//                LOGGER.info("flow jobis now: " + flowRun.getJobsGraph().toString());
+//                LOGGER.info("flow jobis222 now: " + flowRun.getJobsGraph().getAllEdges(null, null));
+//            }
+//            catch(Exception e){}
+            
             try{
-                FlowRun flowRun = new FlowRun(flow);
-                LOGGER.info("flow jobis now: " + flowRun.getJobsGraph().toString());
-                LOGGER.info("flow jobis222 now: " + flowRun.getJobsGraph().getAllEdges(null, null));
+                for (DownStreamRunDeclarer declarer : DownStreamRunDeclarer.all()) {
+                    List<Run> runs = declarer.getDownStream(run);
+                    for (Run r : runs) {
+                        LOGGER.info("maybe one here: " + r.getDisplayName() + " and " + r.getFullDisplayName());
+                        TopLevelItem itemss = super.getJob(r.getFullDisplayName());
+                         //LOGGER.info("nother one here: " + Jenkins.getInstance().getItemByFullName(r.getFullDisplayName()));
+                        LOGGER.info("maybe one here name: " + r.getParent().getName());
+                        result.add(super.getOwnerItemGroup().getItem(r.getParent().getName()));
+                    }
+                }
             }
             catch(Exception e){}
+            
+        
             
             Job parent = run.getParent();
         String name = parent.getFullName();
