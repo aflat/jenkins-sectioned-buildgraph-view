@@ -7,7 +7,9 @@
 package net.stockg.sectioned.buildgraph.view;
 
 import com.cloudbees.plugins.flow.BuildFlow;
+import com.cloudbees.plugins.flow.BuildFlowDSLExtension;
 import org.jenkinsci.plugins.buildgraphview.DownStreamRunDeclarer;
+import org.jenkinsci.plugins.buildgraphview.BuildGraph;
 import com.cloudbees.plugins.flow.FlowDownStreamRunDeclarer;
 import com.cloudbees.plugins.flow.FlowRun;
 import hudson.Extension;
@@ -17,6 +19,7 @@ import hudson.model.Cause;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.ListView;
 import hudson.model.Run;
@@ -84,9 +87,16 @@ public class BuildGraphDashboard  extends ListView {
             LOGGER.log(Level.INFO, "getting parent:: " + item.getParent().getFullName());
             project = Jenkins.getInstance().getItemByFullName(item.getName(), AbstractProject.class);
             LOGGER.log(Level.INFO, "getting project names:: " + project.getRelativeNameFrom(item));
+            LOGGER.log(Level.INFO, "item parent: " + item.getParent());
+            BuildFlow flow = Jenkins.getInstance().getItemByFullName(item.getName(), BuildFlow.class); 
+            //BuildFlow buildFlow = new BuildFlow(project.getParent(),project.getRelativeNameFrom(item));
             LOGGER.log(Level.INFO, "getting project!!:: " + project.toString());
+            LOGGER.info( "getting dsl: " + flow.getDsl());
+            new FlowDSL().parseFlowScript( flow.getDsl(), LOGGER);
             run = project.getLastBuild();
-           
+            
+            BuildGraph graph = new BuildGraph(project.getLastBuild());
+            LOGGER.info("NAME: " + graph.getStart().toString());
  
 //            BuildFlow flow = Jenkins.getInstance().getItemByFullName(item.getName(), BuildFlow.class);
 //            try{
@@ -95,6 +105,7 @@ public class BuildGraphDashboard  extends ListView {
 //                LOGGER.info("flow jobis222 now: " + flowRun.getJobsGraph().getAllEdges(null, null));
 //            }
 //            catch(Exception e){}
+           
             
             try{
                 for (DownStreamRunDeclarer declarer : DownStreamRunDeclarer.all()) {
@@ -109,6 +120,7 @@ public class BuildGraphDashboard  extends ListView {
                 }
             }
             catch(Exception e){}
+            
             
         
             
