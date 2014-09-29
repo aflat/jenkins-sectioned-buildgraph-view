@@ -45,6 +45,7 @@ import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import static net.stockg.sectioned.buildgraph.view.BuildGraphDashboard.LOGGER;
+import net.stockg.sectioned.buildgraph.view.ParseFlowDSL;
 import org.jenkinsci.plugins.buildgraphview.BuildExecution;
 import org.jenkinsci.plugins.buildgraphview.BuildGraph;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -92,11 +93,17 @@ public class BuildGraphDashboard  extends ListView {
             //BuildFlow buildFlow = new BuildFlow(project.getParent(),project.getRelativeNameFrom(item));
             LOGGER.log(Level.INFO, "getting project!!:: " + project.toString());
             LOGGER.info( "getting dsl: " + flow.getDsl());
-            new FlowDSL().parseFlowScript( flow.getDsl(), LOGGER);
+            new ParseFlowDSL().parseFlowScript( flow.getDsl(), LOGGER);
             run = project.getLastBuild();
             
             BuildGraph graph = new BuildGraph(project.getLastBuild());
             LOGGER.info("NAME: " + graph.getStart().toString());
+            try{
+            LOGGER.info("NAME2222: " + graph.getGraph().edgeSet().toString());
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
  
 //            BuildFlow flow = Jenkins.getInstance().getItemByFullName(item.getName(), BuildFlow.class);
 //            try{
