@@ -1,5 +1,4 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-
 <!--
 if (this.isEmpty()){
     set("views",my.owner.views);
@@ -8,26 +7,77 @@ if (this.isEmpty()){
     include(my,"noJob.jelly");
 }
 else {
-   
+    
         f.textbox(name: "replyTo", value: "my tooooooo")-->
+       
+    
+    
+    
+        <j:invokeStatic var="columnExtensions" className="hudson.model.ListView" method="getDefaultColumns"/>
         <j:set var="views" value="${it.owner.views}"/>
 	<j:set var="currentView" value="${it}"/>
 
 	<j:set var="customColumn" value="${it.createCustomColumn()}"/>
 
 	<st:include page="viewTabs.jelly" it="${it.owner.viewsTabBar}"/>
-        <table style="width:300px">
-            <tr style="border-top: 2px;">
+        <j:set var="columnExtensions" value="${section.columns}"/>
+        <table id="projectstatus" class="pane bigtable">
+          <tr style="border-top: 0px;">
+            <j:forEach var="col" items="${columnExtensions}">
+              <st:include page="columnHeader.jelly" it="${col}" />
+            </j:forEach>
+            <th>
+              <st:nbsp/>
+            </th>
+          </tr>
+          <j:forEach var="job" items="${it.items}" >
+          <!--<j:forEach var="job" items="${section.getItems(it.ownerItemGroup)}">-->
+            <!--<j:set var="relativeLinkToJob" value="${h.getRelativeLinkTo(job)}"/>-->
+            <j:set var="relativeLinkToJob" value="${it.getJobUrl(job.name)}"/>
+            <t:projectViewRow jobBaseUrl="${relativeLinkToJob.substring(0, relativeLinkToJob.length() - job.shortUrl.length())}"/>
+            <td>
+                <a href="${h.getRelativeLinkTo(job)}">${job.name}</a>
+                            
+            </td>
+          </j:forEach>
+        </table>
+
+        <table style="width: 0px;height: 0px;border: solid 1px black;">
+            <tr style="border-top: 0px;border-bottom: 0px;border: solid 1px black;">
+                <j:forEach var="col" items="${columnExtensions}">
+                  <st:include page="columnHeader.jelly" it="${col}" />
+                </j:forEach>
+                <th>
+                  <st:nbsp/>
+                </th>
+            </tr>
+            
+            <!--<tr style="border-top: 2px;">-->
+<!--            <j:forEach var="job" items="${it.items}">
+                <j:set var="relativeLinkToJob" value="${h.getRelativeLinkTo(job)}"/>
+                <t:projectViewRow jobBaseUrl="${relativeLinkToJob.substring(0, relativeLinkToJob.length() - job.shortUrl.length())}"/>
+                <t:projectViewRow jobBaseUrl="${it.getJobUrl(job.name)}"/>
+            </j:forEach>-->
                    
-                   
-                    <j:forEach items="${it.items}" var="job">
+                    <j:forEach var="job" items="${it.items}" >
+                        <t:projectViewRow jobBaseUrl="${it.getJobUrl(job.name)}"/>
+                        
+                        
+                        
                         <j:set var="table" value="${it.getDisplayRows(job.name)}"/>
-                        <tr>
-                        <td>${job.name}</td>
-                        <td>${table}</td>
+                        <j:set var="relativeLinkToJob" value="${it.getJobUrl(job.name)}"/>
+                        <tr style="border-top: 1px black;border-bottom: 1px black;border: solid 1px black;">
+                        <td style="border-top: 1px black;border-bottom: 1px black;border: solid 1px black;">
+                            <a href="${h.getRelativeLinkTo(job)}">${job.name}</a>
+                            <a style="padding-left:5em;" href="${h.getRelativeLinkTo(job)}">${job.name}</a>
+                            
+                        </td>
+                       
+                        <!--<td>${job.name}</td>-->
+                        <!--<td>${table}</td>-->
                         </tr>
                     </j:forEach>
-            </tr>
+            <!--</tr>-->
            
         </table>
 

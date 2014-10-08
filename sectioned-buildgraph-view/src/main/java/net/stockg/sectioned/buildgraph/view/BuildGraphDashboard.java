@@ -12,6 +12,7 @@ import org.jenkinsci.plugins.buildgraphview.DownStreamRunDeclarer;
 import org.jenkinsci.plugins.buildgraphview.BuildGraph;
 import com.cloudbees.plugins.flow.FlowDownStreamRunDeclarer;
 import com.cloudbees.plugins.flow.FlowRun;
+import com.sun.rowset.internal.Row;
 import hudson.Extension;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -51,6 +52,7 @@ import org.jenkinsci.plugins.buildgraphview.BuildGraph;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.bind.BoundObjectTable.Table;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -200,15 +202,28 @@ public class BuildGraphDashboard  extends ListView {
     
     @SuppressWarnings("UnusedDeclaration")
     @Exported
-    public String getDisplayRows(String job) { //show hidden is from a request parameter. Hence the string rather than boolean
+    public String getDisplayRows(String job) { 
 //		LOGGER.info("getDisplayRows starting");
         //LOGGER.log(Level.INFO,"getDisplayRows starting" + job);
         LOGGER.info("getDisplayRows starting " + job);
-        String result = JOBLISTINGS.get(job);
+        //String result = JOBLISTINGS.get(job);
+        BuildGraph graph = new BuildGraph(project.getLastBuild());
+        String result = "";
+        try{
+        result = graph.getGraph().edgeSet().toString();
+        }
+        catch (Exception e){}
         
         
         
         return result;
+    }
+
+    @Exported
+    public String getJobUrl(String jobName) {
+        LOGGER.log(Level.INFO, "Getting a URL!!!!" );
+        
+        return "/" + jobName + "/";
     }
     private void computeGraphFrom(Run run) throws ExecutionException, InterruptedException {
         LOGGER.log(Level.INFO, "IN computeGraphFrom " );
