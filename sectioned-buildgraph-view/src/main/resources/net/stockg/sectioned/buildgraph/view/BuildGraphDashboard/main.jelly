@@ -42,7 +42,11 @@ else {
             <td>
                 <a href="${h.getRelativeLinkTo(job)}">${job.name}aaaaaa</a>
                 
-                <j:set var="allDownstreamJobs" value="${it.getDownstreamFlowItems(job.name)}"/>     
+                <j:set var="allDownstreamJobs" value="${it.getDownstreamFlowItems(job.name)}"/>  
+                <!--<a href="${h.getRelativeLinkTo(allDownstreamJobs)}">${allDownstreamJobs.name}ccccccc</a>-->
+                <j:forEach var="downjob" items="${allDownstreamJobs}" > 
+                    <a style="padding-left:5em;" href="${h.getRelativeLinkTo(downjob)}">${downjob.name}</a>
+                </j:forEach>  
             </td>
             </tr>
           </j:forEach>
@@ -75,7 +79,7 @@ else {
                         <j:set var="relativeLinkToJob" value="${it.getJobUrl(job.name)}"/>
                         <tr style="border-top: 1px black;border-bottom: 1px black;border: solid 1px black;">
                         <td style="border-top: 1px black;border-bottom: 1px black;border: solid 1px black;">
-                            <a href="${h.getRelativeLinkTo(job)}">${job.name}</a>
+                            <a href="${h.getRelativeLinkTo(job)}">${job.name}bbbbbbb</a>
                             <a style="padding-left:5em;" href="${h.getRelativeLinkTo(job)}">${job.name}</a>
                             
                         </td>
