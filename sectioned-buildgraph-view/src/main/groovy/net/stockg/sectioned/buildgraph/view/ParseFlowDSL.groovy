@@ -76,7 +76,8 @@ public class ParseFlowDSL extends FlowDSL{
         //dslScript.setDelegate(flow);
 
         try {
-            LOGGER.info("running!!!!! : " + dslScript.toString())
+            LOGGER.info("running!!!!! : " + dslScript.toString() + " and: " + dslScript.dump())
+            
             //dslScript.run()
         } catch(JobExecutionFailureException e) {
             LOGGER.info("failed to compelte.... ")

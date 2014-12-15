@@ -28,17 +28,23 @@ else {
             </j:forEach>
             <th>
               <st:nbsp/>
+              <st:nbsp/>
             </th>
           </tr>
           <j:forEach var="job" items="${it.items}" >
           <!--<j:forEach var="job" items="${section.getItems(it.ownerItemGroup)}">-->
             <!--<j:set var="relativeLinkToJob" value="${h.getRelativeLinkTo(job)}"/>-->
             <j:set var="relativeLinkToJob" value="${it.getJobUrl(job.name)}"/>
-            <t:projectViewRow jobBaseUrl="${relativeLinkToJob.substring(0, relativeLinkToJob.length() - job.shortUrl.length())}"/>
+            <!--<j:set var="relativeLinkToJob" value="${h.getRelativeLinkTo(job)}"/>-->
+            <!--<t:projectViewRow  jobBaseUrl="ughhh: ${relativeLinkToJob.substring(0, relativeLinkToJob.length() - job.shortUrl.length())}"/>-->
+            <!--<t:projectViewRow  jobBaseUrl="${relativeLinkToJob.substring(0, relativeLinkToJob.length() - job.shortUrl.length())}"/>-->
+            <tr>
             <td>
-                <a href="${h.getRelativeLinkTo(job)}">${job.name}</a>
-                            
+                <a href="${h.getRelativeLinkTo(job)}">${job.name}aaaaaa</a>
+                
+                <j:set var="allDownstreamJobs" value="${it.getDownstreamFlowItems(job.name)}"/>     
             </td>
+            </tr>
           </j:forEach>
         </table>
 
@@ -48,6 +54,7 @@ else {
                   <st:include page="columnHeader.jelly" it="${col}" />
                 </j:forEach>
                 <th>
+                  <st:nbsp/>
                   <st:nbsp/>
                 </th>
             </tr>

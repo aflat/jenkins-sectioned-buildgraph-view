@@ -29,8 +29,17 @@ import hudson.model.User;
 import hudson.model.View;
 import hudson.model.ViewDescriptor;
 import hudson.plugins.parameterizedtrigger.BuildInfoExporterAction;
+import hudson.views.BuildButtonColumn;
+import hudson.views.JobColumn;
+import hudson.views.LastDurationColumn;
+import hudson.views.LastFailureColumn;
+import hudson.views.LastSuccessColumn;
+import hudson.views.ListViewColumn;
+import hudson.views.StatusColumn;
+import hudson.views.WeatherColumn;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -72,7 +81,24 @@ public class BuildGraphDashboard  extends ListView {
             super(name);
     }
     
-        
+    public List<TopLevelItem> getDownstreamFlowItems(String job) {
+        List<TopLevelItem> result = new ArrayList<TopLevelItem>();
+        TopLevelItem item = super.getOwnerItemGroup().getItem(job);
+        BuildFlow flow = Jenkins.getInstance().getItemByFullName(item.getName(), BuildFlow.class); 
+        //BuildFlow buildFlow = new BuildFlow(project.getParent(),project.getRelativeNameFrom(item));
+        LOGGER.log(Level.INFO, "getting project!!:: " + project.toString());
+        LOGGER.info( "getting dsl: " + flow.getDsl());
+        FlowRun flowRun = flow.getLastBuild();
+        for (Job singleJob : flowRun.getBuildFlow().getAllJobs()){
+            LOGGER.info( "single JOBBBBBBBBB: " + singleJob.toString());
+            
+        }
+  
+        new ParseFlowDSL().parseFlowScript( flow.getDsl(), LOGGER);
+        run = project.getLastBuild();
+        return result;
+    }
+       
     @Override
     public List<TopLevelItem> getItems() {
         LOGGER.log(Level.INFO, "getting items");
@@ -98,14 +124,14 @@ public class BuildGraphDashboard  extends ListView {
             new ParseFlowDSL().parseFlowScript( flow.getDsl(), LOGGER);
             run = project.getLastBuild();
             
-            BuildGraph graph = new BuildGraph(project.getLastBuild());
-            LOGGER.info("NAME: " + graph.getStart().toString());
-            try{
-            LOGGER.info("NAME2222: " + graph.getGraph().edgeSet().toString());
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
+//            BuildGraph graph = new BuildGraph(project.getLastBuild());
+//            LOGGER.info("NAME: " + graph.getStart().toString());
+//            try{
+//            LOGGER.info("NAME2222: " + graph.getGraph().edgeSet().toString());
+//            }
+//            catch(Exception e){
+//                e.printStackTrace();
+//            }
  
 //            BuildFlow flow = Jenkins.getInstance().getItemByFullName(item.getName(), BuildFlow.class);
 //            try{
@@ -124,7 +150,7 @@ public class BuildGraphDashboard  extends ListView {
                         TopLevelItem itemss = super.getJob(r.getFullDisplayName());
                          //LOGGER.info("nother one here: " + Jenkins.getInstance().getItemByFullName(r.getFullDisplayName()));
                         LOGGER.info("maybe one here name: " + r.getParent().getName());
-                        result.add(super.getOwnerItemGroup().getItem(r.getParent().getName()));
+                        //result.add(super.getOwnerItemGroup().getItem(r.getParent().getName()));
                     }
                 }
             }
@@ -308,5 +334,18 @@ public class BuildGraphDashboard  extends ListView {
                     return "Sectioned Buildgraph Dashboard";
             }
     }
+    /**
+     * Traditional column layout before the {@link ListViewColumn} becomes extensible.
+     */
+    @SuppressWarnings("unchecked")
+    private static final List<Class<? extends ListViewColumn>> DEFAULT_COLUMNS =  Arrays.asList(
+        StatusColumn.class,
+        WeatherColumn.class,
+        JobColumn.class,
+        LastSuccessColumn.class,
+        LastFailureColumn.class,
+        LastDurationColumn.class,
+        BuildButtonColumn.class
+    );
     
 }
