@@ -84,30 +84,33 @@ public class BuildGraphDashboard  extends ListView {
             super(name);
     }
     
-    public List<TopLevelItem> BuildRow(String job, List<TopLevelItem> result){
+    public List<TopLevelItem> BuildRow(BuildFlow flow, String job, List<TopLevelItem> result){
         //List<TopLevelItem> result = new ArrayList<TopLevelItem>();
         TopLevelItem item = super.getOwnerItemGroup().getItem(job);
-        BuildFlow flow = Jenkins.getInstance().getItemByFullName(item.getName(), BuildFlow.class); 
-         FlowRun flowRun = flow.getLastBuild();
+        FlowRun flowRun = flow.getLastBuild();
         //DirectedGraph<JobInvocation, FlowRun.JobEdge> currentFlow = flowRun.getJobsGraph();
         
-        
+       
         for (Job singleJob : flowRun.getBuildFlow().getAllJobs()){
-            
-           for (DownStreamRunDeclarer declarer : DownStreamRunDeclarer.all()) {
-               List<Run> runs = null;
-               try{
-                   runs = declarer.getDownStream(singleJob.getLastBuild());
-               }
-               catch(Exception e){
-                   LOGGER.info("Error getting the last build: " + e.getMessage());
-               }
-                
-                for (Run r : runs) {
-                    TopLevelItem items = super.getJob(r.getFullDisplayName());
-                    items = super.getJob(r.getParent().getName());
-                    //List<TopLevelItem> addResult = BuildRow(r.getParent().getName(),addResult);
-                    result.addAll(BuildRow(r.getParent().getName(),result));
+            if(singleJob.getName().equals(job) ){
+                for (DownStreamRunDeclarer declarer : DownStreamRunDeclarer.all()) {
+                   List<Run> runs = null;
+
+                   try{
+                       runs = declarer.getDownStream(singleJob.getLastBuild());
+
+                   }
+                   catch(Exception e){
+                       LOGGER.info("Error getting the last build: " + e.getMessage());
+                   }
+
+                    for (Run r : runs) {
+                        TopLevelItem items = super.getJob(r.getFullDisplayName());
+                        items = super.getJob(r.getParent().getName());
+                        //List<TopLevelItem> addResult = BuildRow(r.getParent().getName(),addResult);
+                        LOGGER.info("Adding more:: " +  r.getParent().getName());
+                        result.addAll(BuildRow(flow, r.getParent().getName(),result));
+                    }
                 }
             }
         }
@@ -117,15 +120,21 @@ public class BuildGraphDashboard  extends ListView {
     public List<ArrayList<TopLevelItem>> getDownstreamFlowItems(String job) {
         int row = 0;
         List<ArrayList<TopLevelItem>> result = new ArrayList<ArrayList<TopLevelItem>>();
+        //result.add(new ArrayList<TopLevelItem>());
         TopLevelItem item = super.getOwnerItemGroup().getItem(job);
         BuildFlow flow = Jenkins.getInstance().getItemByFullName(item.getName(), BuildFlow.class); 
         //BuildFlow buildFlow = new BuildFlow(project.getParent(),project.getRelativeNameFrom(item));
         LOGGER.log(Level.INFO, "getting project!!:: " + project.toString());
         //LOGGER.info( "getting dsl: " + flow.getDsl());
         FlowRun flowRun = flow.getLastBuild();
-        //DirectedGraph<JobInvocation, FlowRun.JobEdge> currentFlow = flowRun.getJobsGraph();
+        DirectedGraph<JobInvocation, FlowRun.JobEdge> currentFlow = flowRun.getJobsGraph();
+        Iterator<JobEdge> edge = currentFlow.edgeSet().iterator();
+        while(edge.hasNext()){
+            LOGGER.info("ITERATING::: " + edge.next().getTarget().getName());
+            LOGGER.info("ITERATING222::: " + edge.next().getSource().getName());
+        }
         
-        
+       
         for (Job singleJob : flowRun.getBuildFlow().getAllJobs()){
             
            for (DownStreamRunDeclarer declarer : DownStreamRunDeclarer.all()) {
@@ -137,15 +146,19 @@ public class BuildGraphDashboard  extends ListView {
                    LOGGER.info("Error getting the last build: " + e.getMessage());
                }
                 
+                
                 for (Run r : runs) {
                     LOGGER.info("maybe one hereDOWNSTREAM: " + r.getDisplayName() + " and " + r.getFullDisplayName());
                     TopLevelItem items = super.getJob(r.getFullDisplayName());
+                    result.add(new ArrayList<TopLevelItem>());
+                    result.get(row).add(items);
                      //LOGGER.info("nother one here: " + Jenkins.getInstance().getItemByFullName(r.getFullDisplayName()));
                     items = super.getJob(r.getParent().getName());
                     LOGGER.info("maybe one here nameDOWNSTREAM: " + r.getParent().getName());
-                    //result.add(super.getOwnerItemGroup().getItem(r.getParent().getName()));
-                    LOGGER.info("I got some name::::: " + items.getFullDisplayName());
-                    result.get(row).addAll(BuildRow(r.getParent().getName(),result.get(row)));
+                    result.get(row).add(super.getJob(r.getParent().getName()));
+                    LOGGER.info("I got some nameDOWNSTREAM::::: " + items.getFullDisplayName());
+                    
+                    //result.get(row).addAll(BuildRow(flow, r.getParent().getName(),result.get(row)));
                     row++;
                     //result.add(super.getOwnerItemGroup().getItem(r.getParent().getName()));
                 }
